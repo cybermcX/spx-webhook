@@ -1,12 +1,12 @@
 // index.js
 const axios = require('axios');
 
-const webhookUrl = 'https://discord.com/api/webhooks/1390777914148126760/2adD9jhpnkqA_UmQde2o_xWREozPxkbYnrucktOkkHUXzOG-vIuq00neFkahywxlliy-'; //
+const webhookUrl = 'https://discord.com/api/webhooks/1390777914148126760/2adD9jhpnkqA_UmQde2o_xWREozPxkbYnrucktOkkHUXzOG-vIuq00neFkahywxlliy-';  //
 
 axios.post(webhookUrl, {
-  content: '📈 SPX 0DTE 策略通知：建议关注支撑/压力区间 xxx-xxx'
+  content: '📈 SPX 0DTE 策略通知：测试推送成功 ✅'
 }).then(() => {
-  console.log('✅ 已成功发送通知到 Discord');
+  console.log('✅ 已成功发送到 Discord');
 }).catch((err) => {
   console.error('❌ 发送失败:', err.message);
 });
