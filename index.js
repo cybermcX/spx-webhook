@@ -25,5 +25,5 @@ app.get('/trigger', async (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log('🚀 服务器已启动，监听端口 ${PORT})';
+  console.log('🚀 服务器已启动，监听端口 ${PORT}');
 });
