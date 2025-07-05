@@ -13,7 +13,7 @@ app.get('/', (req, res) => {
 
 app.get('/trigger', async (req, res) => {
   const { suggestion, reason } = generateStrategy();
-  const content = '📈 SPX 0DTE 策略通知：${suggestion}\n📌 理由：${reason}';
+  const content = `📈 SPX 0DTE 策略通知：${suggestion}\n📌 理由：${reason}`;
 
   try {
     await axios.post(webhookUrl, { content });
@@ -25,5 +25,5 @@ app.get('/trigger', async (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(🚀 服务器已启动，监听端口 ${PORT});
+  console.log(`🚀 服务器已启动，监听端口 ${PORT})`;
 });
