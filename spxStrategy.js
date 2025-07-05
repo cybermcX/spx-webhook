@@ -12,7 +12,7 @@ const generateSPXStrategy = () => {
   const strike = direction.includes('涨') ? 5500 : 5450;
   const optionType = direction.includes('涨') ? 'Call' : 'Put';
 
-  const suggestion = 买入 SPX 0DTE ${optionType}，行权价 ${strike}，止损 -20%，止盈 +40%;
+  const suggestion = '买入 SPX 0DTE ${optionType}，行权价 ${strike}，止损 -20%，止盈 +40%';
   const reason = 随机模拟策略（下一步可接入 AI 判断）;
 
   return `📈 SPX 0DTE 策略通知（${date}）
