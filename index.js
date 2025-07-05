@@ -18,9 +18,9 @@ function writeLogToFile(content) {
   }
 
   const dateStr = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
-  const logFile = path.join(logsDir, spx-${dateStr}.txt);
+  const logFile = path.join(logsDir, `spx-${dateStr}.txt`);
   const timeStr = new Date().toISOString();
-  const logContent = [${timeStr}]\n${content}\n\n;
+  const logContent = `[${timeStr}]\n${content}\n\n`;
 
   fs.appendFile(logFile, logContent, (err) => {
     if (err) {
