@@ -2,13 +2,12 @@ name: Daily Trigger SPX Webhook
 
 on:
   schedule:
-    - cron: '0 13 * * 1-5'  # 每週一到五，PDT 時間早上 6 點
-  workflow_dispatch:        # 手動觸發
+    - cron: '30 13 * * 1-5'  # UTC時間 13:30 = 美東時間 09:30 = 溫哥華 06:30
+  workflow_dispatch:
 
 jobs:
   trigger:
     runs-on: ubuntu-latest
     steps:
-      - name: Send /trigger request
-        run: |
-          curl -s https://spx-webhook.onrender.com/trigger
+      - name: Curl Render Webhook
+        run: curl -s -X GET "https://spx-webhook.onrender.com/trigger"
