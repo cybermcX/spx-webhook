@@ -1,0 +1,46 @@
+const axios = require('axios');
+
+async function getOptionsData(symbol = '^SPX') {
+  try {
+    const url = `https://query2.finance.yahoo.com/v7/finance/options/${encodeURIComponent(symbol)}`;
+    const { data } = await axios.get(url);
+
+    const optionDate = data.optionChain.result[0].expirationDates[0];
+    const optionUrl = `${url}?date=${optionDate}`;
+    const { data: optionData } = await axios.get(optionUrl);
+
+    const calls = optionData.optionChain.result[0].options[0].calls;
+    const puts = optionData.optionChain.result[0].options[0].puts;
+
+    // 選出最接近當前價格的幾檔（例如成交量最高的前3個 Call/Put）
+    const topCalls = calls
+      .filter(o => o.volume !== null)
+      .sort((a, b) => b.volume - a.volume)
+      .slice(0, 3);
+
+    const topPuts = puts
+      .filter(o => o.volume !== null)
+      .sort((a, b) => b.volume - a.volume)
+      .slice(0, 3);
+
+    return {
+      calls: topCalls.map(o => ({
+        strike: o.strike,
+        iv: o.impliedVolatility,
+        volume: o.volume,
+        oi: o.openInterest,
+      })),
+      puts: topPuts.map(o => ({
+        strike: o.strike,
+        iv: o.impliedVolatility,
+        volume: o.volume,
+        oi: o.openInterest,
+      })),
+    };
+  } catch (err) {
+    console.error('❌ 抓取選擇權資料失敗:', err.message);
+    return null;
+  }
+}
+
+module.exports = getOptionsData;
