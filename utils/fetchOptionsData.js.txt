@@ -1,0 +1,55 @@
+const axios = require('axios');
+const moment = require('moment-timezone');
+
+async function getYahooOptionsData() {
+  const symbol = '^GSPC'; // SPX 指數
+  const today = moment().tz('America/New_York');
+  let daysToAdd = (5 - today.day() + 7) % 7; // 下一個週五
+  if (daysToAdd === 0) daysToAdd = 7;
+  const nextFriday = today.clone().add(daysToAdd, 'days').startOf('day');
+  const expiryTimestamp = nextFriday.unix();
+
+  const url = `https://query2.finance.yahoo.com/v7/finance/options/${symbol}?date=${expiryTimestamp}`;
+
+  try {
+    const response = await axios.get(url, {
+      headers: { 'User-Agent': 'Mozilla/5.0' }
+    });
+
+    const data = response.data.optionChain.result[0];
+    const underlyingPrice = data.quote.regularMarketPrice;
+    const calls = data.options[0].calls;
+    const puts = data.options[0].puts;
+
+    const nearATM = s => Math.abs(s.strike - underlyingPrice) <= 50;
+
+    const filteredCalls = calls.filter(nearATM).map(c => ({
+      strike: c.strike,
+      ask: c.ask,
+      bid: c.bid,
+      volume: c.volume,
+      iv: c.impliedVolatility
+    }));
+
+    const filteredPuts = puts.filter(nearATM).map(p => ({
+      strike: p.strike,
+      ask: p.ask,
+      bid: p.bid,
+      volume: p.volume,
+      iv: p.impliedVolatility
+    }));
+
+    return {
+      price: underlyingPrice,
+      calls: filteredCalls,
+      puts: filteredPuts,
+      expiry: nextFriday.format('YYYY-MM-DD')
+    };
+
+  } catch (error) {
+    console.error('❌ 無法取得 Yahoo Options 資料:', error.message);
+    return null;
+  }
+}
+
+module.exports = getYahooOptionsData;
