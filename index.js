@@ -12,7 +12,7 @@ app.get('/', (req, res) => {
   res.send('✅ SPX Webhook Server is running.');
 });
 
-const webhookUrl = 'https://discord.com/api/webhooks/1390777914148126760/2adD9jhpnkqA_UmQde2o_xWREozPxkbYnrucktOkkHUXzOG-vIuq00neFkahywxlliy-';
+const webhookUrl = 'https://discord.com/api/webhooks/1391536828863090871/OGXVInFJ8NfEHNouBCsGI3cQWthqQKwt8P_kU_LvHgwRom7009jNLH43Pa2M9_vYIW2-';
 
 // ✅ 日志函数
 function writeLogToFile(content) {
