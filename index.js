@@ -8,13 +8,13 @@ const isMarketOpen = require('./utils/isMarketOpen');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-const webhookUrl = 'https://discord.com/api/webhooks/1390777914148126760/2adD9jhpnkqA_UmQde2o_xWREozPxkbYnrucktOkkHUXzOG-vIuq00neFkahywxlliy-';
-
 app.get('/', (req, res) => {
   res.send('✅ SPX Webhook Server is running.');
 });
 
-// 写入 logs/spx-YYYY-MM-DD.txt
+const webhookUrl = 'https://discord.com/api/webhooks/1390777914148126760/2adD9jhpnkqA_UmQde2o_xWREozPxkbYnrucktOkkHUXzOG-vIuq00neFkahywxlliy-';
+
+// ✅ 日志函数
 function writeLogToFile(content) {
   const logsDir = path.join(__dirname, 'logs');
   if (!fs.existsSync(logsDir)) fs.mkdirSync(logsDir);
@@ -32,13 +32,14 @@ function writeLogToFile(content) {
 
 app.get('/trigger', async (req, res) => {
   if (!isMarketOpen()) {
-    const msg = '📅 今天美股休市，不发送策略。';
+    const msg = "📅 今天美股休市，不发送策略。";
     console.log(msg);
-    return res.send(msg);
+    res.send(msg);
+    return;
   }
 
-  const { suggestion, reason } = await generateStrategy();
-  const content = `📈 SPX 0DTE 策略通知：${suggestion}\n📌 理由：${reason}`;
+  const { suggestion, reason, timeSlot } = generateStrategy();
+  const content = `⏰ 当前时段：${timeSlot}\n📈 SPX 0DTE 策略：${suggestion}\n📌 理由：${reason}`;
 
   try {
     await axios.post(webhookUrl, { content });

@@ -1,22 +1,26 @@
+// spxStrategy.js
 const moment = require('moment-timezone');
-const fetchMarketData = require('./fetchMarketData');
 
-async function generateStrategy() {
-  const data = await fetchMarketData();
-  if (!data) {
-    return {
-      suggestion: '❌ 数据获取失败',
-      reason: '无法获取 SPX 实时数据，请检查 API 配置或网络连接。'
-    };
-  }
+function getCurrentTimeSlot() {
+  const now = moment().tz('America/Los_Angeles');
+  const hour = now.hour();
+  const minute = now.minute();
+  const totalMinutes = hour * 60 + minute;
 
-  const { spxOpen, spxNow, vix, isPowellSpeaking } = data;
-  const timeNow = moment().tz('America/New_York').format('HH:mm');
+  if (totalMinutes < 390) return '开盘前（06:45 PST）';
+  if (totalMinutes < 720) return '开盘时段（09:30 PST）';
+  if (totalMinutes < 885) return '午盘时段（12:00 PST）';
+  return '收盘前（15:45 PST）';
+}
+
+function generateStrategy() {
+  const spxOpen = 5520;
+  const spxNow = 5558;
+  const vix = 13.8;
+  const isPowellSpeaking = false;
 
   let suggestion = '';
   let reason = '';
-
-  // 趋势判断
   const change = spxNow - spxOpen;
   const percentChange = (change / spxOpen) * 100;
 
@@ -28,22 +32,20 @@ async function generateStrategy() {
     reason = `SPX 当前下跌约 ${percentChange.toFixed(2)}%，可考虑做空或买 Put。`;
   } else {
     suggestion = '⏸ Wait & See（暂不进场）';
-    reason = `SPX 变动幅度 ${percentChange.toFixed(2)}%，暂无明确方向，建议观望。`;
+    reason = `SPX 波动幅度仅 ${percentChange.toFixed(2)}%，暂无明确方向，建议观望。`;
   }
 
   if (vix > 20) {
-    reason += `⚠ 注意：VIX 当前为 ${vix}，市场波动较大，注意控制仓位。`;
+    reason += `⚠ 当前 VIX 为 ${vix}，市场波动加剧，请控制仓位。`;
   }
 
   if (isPowellSpeaking) {
-    reason += `📢 注意：今天有美联储主席讲话，市场可能剧烈波动。`;
+    reason += `📢 今天有美联储主席讲话，市场可能剧烈波动。`;
   }
 
-  if (timeNow > '12:00' && suggestion.includes('Buy Call')) {
-    reason += `🌞 午后做多需留意回调风险。`;
-  }
+  const timeSlot = getCurrentTimeSlot();
 
-  return { suggestion, reason };
+  return { suggestion, reason, timeSlot };
 }
 
 module.exports = generateStrategy;

@@ -1,13 +1,14 @@
 on:
   schedule:
-    - cron: '30 13 * * 1-5'   # 美东时间 09:30（开盘策略）
-    - cron: '00 17 * * 1-5'   # 美东时间 13:00（中盘策略）
-    - cron: '30 19 * * 1-5'   # 美东时间 15:30（收盘策略）
+    - cron: '45 13 * * 1-5'   # 06:45 PST
+    - cron: '30 16 * * 1-5'   # 09:30 PST
+    - cron: '00 19 * * 1-5'   # 12:00 PST
+    - cron: '45 22 * * 1-5'   # 15:45 PST
   workflow_dispatch:
 
 jobs:
-  trigger:
+  call-webhook:
     runs-on: ubuntu-latest
     steps:
-      - name: Curl Render Webhook
-        run: curl -s -X GET "https://spx-webhook.onrender.com/trigger"
+      - name: Call /trigger endpoint
+        run: curl -s https://spx-webhook.onrender.com/trigger
